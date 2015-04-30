@@ -56,6 +56,11 @@ type Account struct {
 		Quota  int64 `json:"quota,omitempty"`  // Quota in bytes.
 		Normal int64 `json:"normal,omitempty"` // Quota for non-shared files.
 	} `json:"quota_info"`
+	IsPaired     bool  `json:"is_paired"`
+	Team         *struct {
+		TeamId string `json:"team_id"`
+		Name   string `json:"name"`
+	} `json:"team,omitempty"`
 }
 
 // CopyRef represents the reply of CopyRef.
@@ -922,4 +927,13 @@ func (db *Dropbox) SharedFolder(sharedFolderId string) (pSharedFolder *SharedFol
 		pSharedFolder = &sharedFolder
 	}
 	return
+}
+
+func (db *Dropbox) Unlink() error {
+	res := map[string]interface{}{} // disable_access_token should return an empty map
+	err := db.doRequest("POST", "disable_access_token", nil, &res)
+	if err == nil {
+		db.token = nil
+	}
+	return err
 }
