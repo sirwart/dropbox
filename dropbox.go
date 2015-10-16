@@ -929,6 +929,12 @@ func (db *Dropbox) SharedFolder(sharedFolderId string) (pSharedFolder *SharedFol
 	return
 }
 
+func (db *Dropbox) SharedFolders() (sharedFolders []SharedFolder, err error) {
+	params := &url.Values{"include_membership": {"true"}}
+	err = db.doRequest("GET", "/shared_folders", params, &sharedFolders)
+	return
+}
+
 func (db *Dropbox) Unlink() error {
 	res := map[string]interface{}{} // disable_access_token should return an empty map
 	err := db.doRequest("POST", "disable_access_token", nil, &res)
